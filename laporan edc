@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Laporan EDC Pro</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #eef2f7;
+  padding: 20px;
+}
+.container {
+  max-width: 700px;
+  margin: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+}
+.bank {
+  border-top: 1px solid #ddd;
+  margin-top: 15px;
+  padding-top: 10px;
+}
+input, textarea, select {
+  width: 100%;
+  margin-top: 5px;
+  padding: 8px;
+}
+button {
+  margin-top: 10px;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 5px;
+}
+button:hover {
+  background: #0056b3;
+}
+pre {
+  background: black;
+  color: lime;
+  padding: 10px;
+  margin-top: 15px;
+  white-space: pre-wrap;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Laporan EDC</h2>
+
+<input id="nama" placeholder="Nama Teknisi">
+<input type="date" id="tgl">
+<input id="toko" placeholder="KODE TOKO - NAMA TOKO">
+
+<!-- BCA -->
+<div class="bank" data-bank="BCA">
+  <h3>BCA</h3>
+
+  <select class="status">
+    <option value="">-- Status --</option>
+    <option>OK</option>
+    <option>NOK</option>
+  </select>
+
+  <textarea class="masalah" placeholder="Masalah"></textarea>
+  <textarea class="solusi" placeholder="Solusi"></textarea>
+
+  <select class="st1"><option value="">-- ST 01 --</option><option>ONLINE</option><option>OFFLINE</option></select>
+  <select class="st2"><option value="">-- ST 02 --</option><option>ONLINE</option><option>OFFLINE</option></select>
+  <select class="st3"><option value="">-- ST 03 --</option><option>ONLINE</option><option>OFFLINE</option></select>
+  <select class="st4"><option value="">-- ST 04 --</option><option>ONLINE</option><option>OFFLINE</option></select>
+</div>
+
+<!-- MANDIRI -->
+<div class="bank" data-bank="MANDIRI">
+  <h3>MANDIRI</h3>
+
+  <select class="status">
+    <option value="">-- Status --</option>
+    <option>OK</option>
+    <option>NOK</option>
+  </select>
+
+  <textarea class="masalah" placeholder="Masalah"></textarea>
+  <textarea class="solusi" placeholder="Solusi"></textarea>
+
+  <select class="st1"><option value="">-- ST 01 --</option><option>ONLINE</option><option>OFFLINE</option></select>
+  <select class="st2"><option value="">-- ST 02 --</option><option>ONLINE</option><option>OFFLINE</option></select>
+  <select class="st3"><option value="">-- ST 03 --</option><option>ONLINE</option><option>OFFLINE</option></select>
+  <select class="st4"><option value="">-- ST 04 --</option><option>ONLINE</option><option>OFFLINE</option></select>
+</div>
+
+<textarea id="note" placeholder="Catatan tambahan"></textarea>
+
+<button onclick="generate()">Generate</button>
+<button onclick="copyText()">Copy</button>
+
+<pre id="output"></pre>
+
+</div>
+
+<script>
+
+// auto tanggal hari ini
+document.getElementById("tgl").valueAsDate = new Date();
+
+// format tanggal
+function formatTanggal(tgl) {
+  if (!tgl) return "-";
+  let d = new Date(tgl);
+  let day = String(d.getDate()).padStart(2, '0');
+  let month = String(d.getMonth() + 1).padStart(2, '0');
+  let year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+// ambil data bank
+function getBankData(bankEl) {
+  return {
+    nama: bankEl.dataset.bank,
+    status: bankEl.querySelector(".status").value || "-",
+    masalah: bankEl.querySelector(".masalah").value || "-",
+    solusi: bankEl.querySelector(".solusi").value || "-",
+    st1: bankEl.querySelector(".st1").value || "-",
+    st2: bankEl.querySelector(".st2").value || "-",
+    st3: bankEl.querySelector(".st3").value || "-",
+    st4: bankEl.querySelector(".st4").value || "-"
+  };
+}
+
+// generate laporan
+function generate() {
+  let banks = document.querySelectorAll(".bank");
+  let hasilBank = "";
+
+  banks.forEach(b => {
+    let d = getBankData(b);
+
+    hasilBank += `
+${d.nama} (NOK/OK) : ${d.status}
+Masalah : ${d.masalah}
+Solusi : ${d.solusi}
+St. 01 (Status) : ${d.st1}
+St. 02 (Status) : ${d.st2}
+St. 03 (Status) : ${d.st3}
+St. 04 (Status) : ${d.st4}
+`;
+  });
+
+  let finalText =
+`${document.getElementById("nama").value || "-"}
+Laporan EDC
+TGL : ${formatTanggal(document.getElementById("tgl").value)}
+==========
+TOKO : ${document.getElementById("toko").value || "-"}
+${hasilBank}
+NOTE : ${document.getElementById("note").value || "-"}`;
+
+  document.getElementById("output").innerText = finalText;
+}
+
+// copy
+function copyText() {
+  let text = document.getElementById("output").innerText;
+  if (!text) {
+    alert("Generate dulu bro 😅");
+    return;
+  }
+  navigator.clipboard.writeText(text);
+  alert("Copied bro 👍");
+}
+
+</script>
+
+</body>
+</html>
